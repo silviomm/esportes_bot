@@ -18,16 +18,23 @@ var GE_URL = 'http://globoesporte.globo.com/servico/semantica/editorias/plantao/
 
 var times = ['botafogo', 'flamengo', 'vasco', 'fluminense'];
 
+function printaArray(array) {
+    for (var i = 0; i < array.length; i++) {
+        console.log(array[i].nome + ' ' + array[i].lastNews + ' ' + array[i].users);
+    }
+}
+
+
 function inicializa() {
-    console.log('length' + times.length);
+    let aux = 0;
     for (var j = 0; j < times.length; j++) {
         var link = GE_URL + times[j] + '/feed.rss';
-        console.log(times[j]); //printa o nome do time
         rssparser.parseURL(link, function(err, parsed) {
-            console.log(times[0]); //printa undefined
-            cbf.nome = times[j];
-            cbf.lastNews = parsed.feed.entries[0];
-            array.push(cbf);
+            cbf.nome = times[aux];
+            cbf.lastNews = parsed.feed.entries[aux];
+            var clone = Object.assign({}, cbf);
+            array.push(clone);
+            aux++;
         });
     }
     console.log('INICIALIZADO');
@@ -39,9 +46,9 @@ console.log('rodando...');
 
 
 function verifica(time, chatId) {
-    console.log('aqui aqui ' + array[0].nome);
     for (var i = 0; i < array.length; i++) {
         console.log('i: ' + i);
+        console.log(array[i].nome);
         if (time == array[i].nome) {
             console.log(time + ' ' + array[i].nome);
             if (array[i].users[chatId] == 1) {
@@ -62,6 +69,7 @@ bot.on('message', (msg) => {
     var link = GE_URL + text + '/feed.rss';
     var string;
     rssparser.parseURL(link, function(err, parsed) {
+        printaArray(array);
         parsed.feed.entries.forEach(function(entry, i) {
             if (i == 0)
                 string = (entry.title + ':' + entry.link);
